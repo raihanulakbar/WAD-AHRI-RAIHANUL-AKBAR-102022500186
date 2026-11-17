@@ -194,3 +194,37 @@ td .aksi form {
 .menu a:hover {
     text-decoration: underline;
 }
+/* ===== Login & Registrasi ===== */
+.form input[type=email],
+.form input[type=password] {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+}
+
+.form label.ingat {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: normal;
+}
+
+.menu {
+    display: flex;
+    align-items: center;
+}
+
+.menu-kanan {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.menu-kanan a {
+    margin-right: 0;
+}
+
+.form-logout {
+    margin: 0;
+}
