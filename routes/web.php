@@ -5,31 +5,41 @@ use App\Http\Controllers\FasilitasController;
 use App\Http\Controllers\MejaController;
 use Illuminate\Support\Facades\Route;
 
-// ===== Hanya untuk yang BELUM login =====
+// 1. Guest + Throttle (batasi percobaan login)
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-    Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/login', [AuthController::class, 'login'])
+        ->middleware('throttle:20,1'); // maks 20 percobaan per 1 menit
 
     Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
     Route::post('/register', [AuthController::class, 'register']);
 });
 
-// ===== Logout =====
-Route::post('/logout', [AuthController::class, 'logout'])
-    ->middleware('auth')
-    ->name('logout');
-
-// ===== Hanya untuk yang SUDAH login =====
+// 2. Wajib login
 Route::middleware('auth')->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
     Route::redirect('/', '/fasilitas');
 
-    // Halaman 1: Fasilitas  -> /fasilitas
-    Route::resource('fasilitas', FasilitasController::class)
-        ->parameters(['fasilitas' => 'fasilitas'])
-        ->except('show');
+    // 3. Admin DAN user: hanya boleh LIHAT
+    Route::middleware('role:admin,user')->group(function () {
+        Route::resource('fasilitas', FasilitasController::class)
+            ->parameters(['fasilitas' => 'fasilitas'])
+            ->only('index');
 
-    // Halaman 2: Area (data meja) -> /area
-    Route::resource('area', MejaController::class)
-        ->parameters(['area' => 'meja'])
-        ->except('show');
+        Route::resource('area', MejaController::class)
+            ->parameters(['area' => 'meja'])
+            ->only('index');
+    });
+
+    // 4. Khusus admin: tambah, edit, hapus
+    Route::middleware('role:admin')->group(function () {
+        Route::resource('fasilitas', FasilitasController::class)
+            ->parameters(['fasilitas' => 'fasilitas'])
+            ->except(['index', 'show']);
+
+        Route::resource('area', MejaController::class)
+            ->parameters(['area' => 'meja'])
+            ->except(['index', 'show']);
+    });
 });
