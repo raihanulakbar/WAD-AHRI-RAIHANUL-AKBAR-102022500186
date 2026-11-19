@@ -18,7 +18,7 @@
 
         <div class="menu-kanan">
             @auth
-                <span>Halo, {{ Auth::user()->name }}</span>
+                <span>Halo, {{ Auth::user()->name }} ({{ Auth::user()->role }})</span>
                 <form method="POST" action="{{ route('logout') }}" class="form-logout">
                     @csrf
                     <button type="submit" class="btn-hapus">Logout</button>

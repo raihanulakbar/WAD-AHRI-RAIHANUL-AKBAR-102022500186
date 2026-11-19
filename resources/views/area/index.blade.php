@@ -5,8 +5,10 @@
 @section('content')
     <h2>Area Perpustakaan</h2>
 
-    <a href="{{ route('area.create') }}" class="btn">+ Tambah Meja</a>
-    <br><br>
+    @if (Auth::user()->isAdmin())
+        <a href="{{ route('area.create') }}" class="btn">+ Tambah Meja</a>
+        <br><br>
+    @endif
 
     {{-- Fitur cari (GET) --}}
     <form action="{{ route('area.index') }}" method="GET">
@@ -30,16 +32,18 @@
                 <p>Stopkontak : {{ $m->stopkontak }}</p>
                 <p class="{{ $m->status === 'Tersedia' ? 'tersedia' : 'tidak' }}">{{ $m->status }}</p>
 
-                <div class="aksi">
-                    <a href="{{ route('area.edit', $m) }}" class="btn btn-kecil">Edit</a>
+                @if (Auth::user()->isAdmin())
+                    <div class="aksi">
+                        <a href="{{ route('area.edit', $m) }}" class="btn btn-kecil">Edit</a>
 
-                    <form method="POST" action="{{ route('area.destroy', $m) }}"
-                          onsubmit="return confirm('Yakin hapus meja ini?');">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn-hapus">Hapus</button>
-                    </form>
-                </div>
+                        <form method="POST" action="{{ route('area.destroy', $m) }}"
+                              onsubmit="return confirm('Yakin hapus meja ini?');">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn-hapus">Hapus</button>
+                        </form>
+                    </div>
+                @endif
             </div>
         @empty
             <p>Belum ada data meja.</p>
